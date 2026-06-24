@@ -1,1 +1,527 @@
-test
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>QTac: Quantitative Robotic Grasping with Tactile Sensing</title>
+<meta name="description" content="QTac: a tactile-driven framework for grasping a user-specified number of objects from dense clutter, with iterative regrasping guided by explicit count feedback. IROS 2026.">
+
+<!-- Open Graph -->
+<meta property="og:title" content="QTac: Quantitative Robotic Grasping with Tactile Sensing">
+<meta property="og:description" content="A tactile-driven framework for grasping an exact, user-specified number of objects. IROS 2026.">
+<meta property="og:image" content="static/images/teaser.png">
+<meta property="og:type" content="website">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+<style>
+:root{
+  --bg:#ffffff;
+  --bg-soft:#f5f8f7;
+  --ink:#15262a;
+  --ink-soft:#4a5d61;
+  --muted:#7d9094;
+  --line:#e3ebe9;
+  --line-strong:#cdd9d7;
+  --teal:#117a6c;
+  --teal-deep:#0c5a50;
+  --teal-tint:#e6f2ef;
+  --amber:#dd7a33;
+  --amber-tint:#fbeede;
+  --maxw:980px;
+  --radius:14px;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--ink);
+  font-family:'Inter',-apple-system,system-ui,sans-serif;
+  font-size:17px;
+  line-height:1.7;
+  -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:var(--maxw);margin:0 auto;padding:0 22px}
+a{color:var(--teal);text-decoration:none}
+a:hover{text-decoration:underline}
+
+/* ---------- Hero ---------- */
+.hero{
+  padding:64px 0 34px;
+  text-align:center;
+  position:relative;
+  background:
+    radial-gradient(120% 100% at 50% -10%, var(--teal-tint) 0%, rgba(230,242,239,0) 55%);
+}
+.eyebrow{
+  display:inline-flex;align-items:center;gap:8px;
+  font-family:'JetBrains Mono',monospace;
+  font-size:12.5px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--teal-deep);
+  background:#fff;border:1px solid var(--line-strong);
+  padding:6px 14px;border-radius:999px;margin-bottom:22px;
+}
+.eyebrow .dot{width:7px;height:7px;border-radius:50%;background:var(--amber)}
+h1.title{
+  font-family:'Plus Jakarta Sans',sans-serif;
+  font-weight:800;
+  font-size:clamp(30px,5.2vw,50px);
+  line-height:1.08;
+  letter-spacing:-0.02em;
+  margin:0 auto 8px;
+  max-width:20ch;
+}
+.title .accent{color:var(--teal)}
+.subtitle{
+  font-size:clamp(16px,2.3vw,20px);
+  color:var(--ink-soft);
+  font-weight:500;
+  max-width:46ch;margin:14px auto 0;
+}
+
+/* authors */
+.authors{margin:26px auto 6px;max-width:720px;font-size:17px;font-weight:500}
+.authors a{color:var(--ink);font-weight:600}
+.authors .sep{color:var(--muted)}
+.affil{color:var(--ink-soft);font-size:15.5px;margin-top:8px}
+.affil sup{color:var(--teal);font-weight:700}
+.corr{color:var(--muted);font-size:13.5px;margin-top:6px}
+
+/* buttons */
+.btns{display:flex;flex-wrap:wrap;gap:11px;justify-content:center;margin:28px 0 4px}
+.btn{
+  display:inline-flex;align-items:center;gap:9px;
+  font-family:'Plus Jakarta Sans',sans-serif;font-weight:600;font-size:15px;
+  padding:11px 19px;border-radius:999px;
+  background:var(--ink);color:#fff;border:1px solid var(--ink);
+  transition:transform .15s ease, box-shadow .15s ease, background .15s ease;
+}
+.btn:hover{text-decoration:none;transform:translateY(-2px);box-shadow:0 8px 22px rgba(21,38,42,.18)}
+.btn.alt{background:#fff;color:var(--ink);border-color:var(--line-strong)}
+.btn.alt:hover{border-color:var(--teal);color:var(--teal-deep)}
+.btn i{font-size:15px}
+
+/* ---------- Sections ---------- */
+section{padding:46px 0}
+.section-head{display:flex;align-items:center;gap:14px;margin-bottom:22px}
+.section-head h2{
+  font-family:'Plus Jakarta Sans',sans-serif;
+  font-weight:700;font-size:clamp(22px,3.4vw,30px);
+  letter-spacing:-0.01em;margin:0;
+}
+.section-head .num{
+  font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:500;
+  color:var(--teal);background:var(--teal-tint);
+  padding:5px 10px;border-radius:8px;flex:none;
+}
+.soft{background:var(--bg-soft);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+
+p.lead{margin:0 0 14px}
+.abstract p{text-align:justify;color:var(--ink-soft);font-size:16.5px}
+
+/* media placeholders */
+figure{margin:0}
+.media{
+  border:1px dashed var(--line-strong);
+  background:
+    linear-gradient(135deg, rgba(17,122,108,.04), rgba(221,122,51,.04));
+  border-radius:var(--radius);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  text-align:center;color:var(--muted);
+  padding:38px 22px;gap:8px;min-height:200px;
+}
+.media i{font-size:30px;color:var(--line-strong)}
+.media .ph-title{font-family:'Plus Jakarta Sans',sans-serif;font-weight:600;color:var(--ink-soft);font-size:15px}
+.media code{font-family:'JetBrains Mono',monospace;font-size:12.5px;background:#fff;border:1px solid var(--line);padding:2px 7px;border-radius:6px;color:var(--teal-deep)}
+.media img,.media video{width:100%;height:auto;border-radius:10px;display:block}
+.media.has-media{padding:0;border-style:solid;background:#000;overflow:hidden}
+figcaption{font-size:14px;color:var(--muted);margin-top:12px;text-align:center;line-height:1.55}
+figcaption b{color:var(--ink-soft);font-weight:600}
+
+/* wide figure (qualitative results) */
+.figure-wide .media{min-height:300px}
+
+/* video */
+.video-frame{
+  border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;
+  background:#0b1416;box-shadow:0 14px 40px rgba(21,38,42,.10);
+}
+.video-frame video{width:100%;display:block}
+
+/* method cards */
+.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:8px}
+.card{
+  border:1px solid var(--line);border-radius:var(--radius);
+  padding:22px;background:#fff;
+}
+.card .tag{
+  font-family:'JetBrains Mono',monospace;font-size:11.5px;letter-spacing:.08em;
+  text-transform:uppercase;color:var(--teal);font-weight:500;
+}
+.card h3{font-family:'Plus Jakarta Sans',sans-serif;font-size:18px;font-weight:700;margin:8px 0 8px}
+.card p{margin:0;font-size:15px;color:var(--ink-soft)}
+.card .icon{
+  width:42px;height:42px;border-radius:11px;display:grid;place-items:center;
+  background:var(--teal-tint);color:var(--teal-deep);font-size:18px;margin-bottom:14px;
+}
+.card:nth-child(2) .icon{background:var(--amber-tint);color:var(--amber)}
+
+/* contributions list */
+.contrib{list-style:none;padding:0;margin:18px 0 0;display:grid;gap:12px}
+.contrib li{
+  display:flex;gap:13px;align-items:flex-start;
+  background:#fff;border:1px solid var(--line);border-radius:12px;padding:15px 17px;
+}
+.contrib li i{color:var(--teal);margin-top:4px;flex:none}
+.contrib li span{font-size:15.5px;color:var(--ink-soft)}
+
+/* ---------- Table ---------- */
+.table-scroll{overflow-x:auto;border:1px solid var(--line);border-radius:var(--radius);background:#fff}
+table{border-collapse:collapse;width:100%;font-size:14px;min-width:760px}
+caption{caption-side:top;text-align:left;padding:14px 16px 6px;color:var(--ink-soft);font-size:14px}
+th,td{padding:9px 11px;text-align:center;border-bottom:1px solid var(--line)}
+thead th{
+  font-family:'Plus Jakarta Sans',sans-serif;font-weight:700;font-size:13px;
+  color:var(--ink);background:var(--bg-soft);
+}
+thead tr.sub th{font-weight:500;color:var(--muted);font-family:'JetBrains Mono',monospace;font-size:11.5px;background:#fafcfb}
+tbody td:first-child,tbody th:first-child{text-align:left;font-weight:600;color:var(--ink);white-space:nowrap}
+.col-ours{background:var(--teal-tint)}
+thead .col-ours{background:#d8ebe6}
+tr.mean td,tr.mean th{font-weight:700;border-top:2px solid var(--line-strong);background:#fbfdfc}
+tr.mean td.col-ours{background:#cfe7e1}
+.best{color:var(--teal-deep);font-weight:700}
+.na{color:var(--muted)}
+
+/* bibtex */
+.bibtex pre{
+  background:#0e1a1c;color:#d8e6e3;border-radius:var(--radius);
+  padding:22px;overflow-x:auto;font-family:'JetBrains Mono',monospace;
+  font-size:13.5px;line-height:1.65;margin:0;
+}
+.bibtex .k{color:#62c7b4}
+.bibtex .v{color:#e0b07a}
+
+/* footer */
+footer{padding:40px 0 56px;border-top:1px solid var(--line);color:var(--muted);font-size:14px;text-align:center}
+footer a{color:var(--ink-soft)}
+.note{
+  max-width:760px;margin:18px auto 0;font-size:13px;color:var(--muted);
+  background:var(--bg-soft);border:1px solid var(--line);border-radius:10px;padding:12px 16px;text-align:left;
+}
+.note code{font-family:'JetBrains Mono',monospace;color:var(--teal-deep)}
+
+@media (max-width:780px){
+  .cards{grid-template-columns:1fr}
+  body{font-size:16px}
+  section{padding:38px 0}
+}
+@media (prefers-reduced-motion:reduce){
+  *{transition:none!important;scroll-behavior:auto!important}
+}
+</style>
+</head>
+<body>
+
+<!-- ===================== HERO ===================== -->
+<header class="hero">
+  <div class="wrap">
+    <span class="eyebrow"><span class="dot"></span>IROS 2026</span>
+    <h1 class="title">QTac: <span class="accent">Quantitative</span> Robotic Grasping with Tactile Sensing</h1>
+    <p class="subtitle">A tactile-driven framework that grasps an exact, user-specified number of objects from dense clutter — verifying the in-hand count by touch and regrasping to correct itself.</p>
+
+    <div class="authors">
+      <a href="#">Huajin Chen</a><span class="sep"> · </span>
+      <a href="#">Tianxiao Chen</a><span class="sep"> · </span>
+      <a href="#">Ke Jin</a><span class="sep"> · </span>
+      <a href="mailto:ouyangwz@zju.edu.cn">Wenzhe Ouyang</a><sup>†</sup><span class="sep"> · </span>
+      <a href="#">Jiming Chen</a><span class="sep"> · </span>
+      <a href="#">Qi Ye</a>
+    </div>
+    <div class="affil">Zhejiang University</div>
+    <div class="corr"><sup>†</sup> Corresponding author</div>
+
+    <div class="btns">
+      <a class="btn" href="static/pdfs/qtac.pdf"><i class="fa-solid fa-file-pdf"></i> Paper</a>
+      <a class="btn alt" href="#"><i class="fa-solid fa-book"></i> arXiv</a>
+      <a class="btn alt" href="https://kibry-spin.github.io/qtac"><i class="fa-solid fa-globe"></i> Project Page</a>
+      <a class="btn alt" href="#"><i class="fa-brands fa-github"></i> Code</a>
+    </div>
+  </div>
+</header>
+
+<!-- ===================== TEASER ===================== -->
+<section style="padding-top:10px">
+  <div class="wrap">
+    <figure>
+      <div class="media" id="teaser">
+        <i class="fa-regular fa-image"></i>
+        <div class="ph-title">Teaser figure (Fig. 1)</div>
+        <div>Place image at <code>static/images/teaser.png</code></div>
+      </div>
+      <figcaption><b>Conceptual overview of QTac.</b> The robot estimates the in-hand count from tactile feedback and rectifies initial grasp errors through iterative regrasping to reach the target quantity.</figcaption>
+    </figure>
+  </div>
+</section>
+
+<!-- ===================== SUMMARY VIDEO ===================== -->
+<section class="soft" id="video">
+  <div class="wrap">
+    <div class="section-head"><span class="num">01</span><h2>Summary Video</h2></div>
+    <div class="video-frame">
+      <!-- Replace the src below with your uploaded summary video -->
+      <video controls preload="metadata" poster="static/images/video_poster.png">
+        <source src="static/videos/qtac_summary.mp4" type="video/mp4">
+        Your browser does not support the video tag.
+      </video>
+    </div>
+    <figcaption>An overview of the method, data collection, and real-world quantitative grasping results.</figcaption>
+  </div>
+</section>
+
+<!-- ===================== ABSTRACT ===================== -->
+<section id="abstract">
+  <div class="wrap abstract">
+    <div class="section-head"><span class="num">02</span><h2>Abstract</h2></div>
+    <p>We investigate the novel task of quantitative robotic grasping and propose <b>QTac</b>, a tactile-driven framework designed to grasp a user-specified number of objects. Existing vision-only approaches struggle with severe occlusions in such tasks, making tactile feedback essential for reliably verifying the in-hand quantity. However, applying this concept faces two key challenges: the inherent unreliability of single-attempt grasping paradigms, and the difficulty of integrating high-dimensional tactile signals into existing manipulation models.</p>
+    <p>QTac addresses these challenges through two key innovations: (1) a human-inspired demonstration strategy that endows the robot with iterative regrasping capabilities to rectify initial count mismatches, reducing the reliance on complex sensory feedback hardware in teleoperation; (2) a decoupled tactile perception module that translates high-dimensional tactile signals into explicit quantitative feedback, directly guiding corrective regrasping. Comprehensive real-world experiments across diverse objects validate that QTac achieves reliable quantitative grasping in dense clutter and successfully extends its quantification capability to novel objects.</p>
+  </div>
+</section>
+
+<!-- ===================== METHOD ===================== -->
+<section class="soft" id="method">
+  <div class="wrap">
+    <div class="section-head"><span class="num">03</span><h2>Method</h2></div>
+
+    <figure style="margin-bottom:30px">
+      <div class="media" id="framework">
+        <i class="fa-solid fa-diagram-project"></i>
+        <div class="ph-title">Framework overview (Fig. 2)</div>
+        <div>Place image at <code>static/images/framework.png</code></div>
+      </div>
+      <figcaption><b>Overview of the QTac framework.</b> A dual-mode data collection strategy, a standalone tactile CountNet, and a DiTFlow-based generative policy conditioned on the count distribution and the user-specified target.</figcaption>
+    </figure>
+
+    <div class="cards">
+      <div class="card">
+        <div class="icon"><i class="fa-solid fa-hand-pointer"></i></div>
+        <span class="tag">Demonstrations</span>
+        <h3>Dual-Mode Data Collection</h3>
+        <p>Direct-grasping trajectories give dense contact-frame supervision for CountNet, while free-adjustment trajectories provide the regrasp-rich primitives that teach the policy to correct count mismatches — without extra sensory hardware.</p>
+      </div>
+      <div class="card">
+        <div class="icon"><i class="fa-solid fa-wave-square"></i></div>
+        <span class="tag">Perception</span>
+        <h3>Tactile CountNet</h3>
+        <p>A decoupled module maps bilateral tactile depth maps to a probabilistic count distribution. Keeping perception explicit and standalone lets it transfer to novel objects without retraining.</p>
+      </div>
+      <div class="card">
+        <div class="icon"><i class="fa-solid fa-arrows-rotate"></i></div>
+        <span class="tag">Policy</span>
+        <h3>DiTFlow Regrasping</h3>
+        <p>A conditional flow-matching policy fuses the count distribution, target quantity, vision, and proprioception to synthesize corrective actions, iteratively regrasping until the achieved count matches the target.</p>
+      </div>
+    </div>
+
+    <ul class="contrib">
+      <li><i class="fa-solid fa-check"></i><span>A demonstration paradigm enabling human-inspired iterative regrasping upon detecting an incorrect quantity.</span></li>
+      <li><i class="fa-solid fa-check"></i><span>A decoupled tactile perception module translating high-dimensional signals into explicit count feedback that generalizes to novel objects.</span></li>
+      <li><i class="fa-solid fa-check"></i><span>A fully integrated framework bridging data collection and policy deployment, validated across six diverse objects in the real world.</span></li>
+    </ul>
+  </div>
+</section>
+
+<!-- ===================== QUALITATIVE RESULTS ===================== -->
+<section id="qualitative" class="figure-wide">
+  <div class="wrap">
+    <div class="section-head"><span class="num">04</span><h2>Qualitative Results</h2></div>
+    <p class="lead" style="color:var(--ink-soft);max-width:70ch;margin-bottom:20px">
+      The policy continuously performs exploratory adjustments until the explicitly decoded tactile state matches the target count. Successful quantitative grasps prior to placement are highlighted; <b>*</b> denotes novel objects.
+    </p>
+    <figure>
+      <div class="media" id="qualitative-fig" style="min-height:360px">
+        <i class="fa-solid fa-table-cells-large"></i>
+        <div class="ph-title">Qualitative results figure (Fig. 4)</div>
+        <div>Wide multi-row figure — place image at <code>static/images/qualitative.png</code></div>
+      </div>
+      <figcaption><b>Reactive recovery behaviors across diverse tasks and target quantities.</b> Each row shows the Initial Grasp → Adjust → Regrasp → Place sequence, with the decoded left/right tactile state on the right.</figcaption>
+    </figure>
+  </div>
+</section>
+
+<!-- ===================== QUANTITATIVE RESULTS ===================== -->
+<section class="soft" id="quantitative">
+  <div class="wrap">
+    <div class="section-head"><span class="num">05</span><h2>Quantitative Results</h2></div>
+    <div class="table-scroll">
+      <table>
+        <caption><b>Table II.</b> Quantitative grasping performance across 6 tasks (MAE ↓ / Success Rate % ↑). N/A: Ours&nbsp;(Spec.) needs per-object direct-grasping data, not collected for novel objects T5–T6.</caption>
+        <thead>
+          <tr>
+            <th rowspan="2">Task</th>
+            <th colspan="2">Vision-Only</th>
+            <th colspan="2">End-to-End</th>
+            <th colspan="2">PC [42]</th>
+            <th colspan="2">π0.5 (V) [43]</th>
+            <th colspan="2">π0.5 (V+T)</th>
+            <th colspan="2" class="col-ours">Ours (Gen.)</th>
+            <th colspan="2" class="col-ours">Ours (Spec.)</th>
+          </tr>
+          <tr class="sub">
+            <th>MAE</th><th>SR</th>
+            <th>MAE</th><th>SR</th>
+            <th>MAE</th><th>SR</th>
+            <th>MAE</th><th>SR</th>
+            <th>MAE</th><th>SR</th>
+            <th class="col-ours">MAE</th><th class="col-ours">SR</th>
+            <th class="col-ours">MAE</th><th class="col-ours">SR</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>T1 · Envelope</td>
+            <td>0.87</td><td>33.3</td>
+            <td>0.67</td><td>43.3</td>
+            <td>1.07</td><td>30.0</td>
+            <td>1.53</td><td>16.7</td>
+            <td>2.27</td><td>6.7</td>
+            <td class="col-ours">0.53</td><td class="col-ours">50.0</td>
+            <td class="col-ours best">0.43</td><td class="col-ours best">56.7</td>
+          </tr>
+          <tr>
+            <td>T2 · Chip</td>
+            <td>1.20</td><td>23.3</td>
+            <td>1.17</td><td>23.3</td>
+            <td>1.43</td><td>26.7</td>
+            <td>2.00</td><td>10.0</td>
+            <td>1.90</td><td>13.3</td>
+            <td class="col-ours">0.77</td><td class="col-ours">36.7</td>
+            <td class="col-ours best">0.50</td><td class="col-ours best">50.0</td>
+          </tr>
+          <tr>
+            <td>T3 · Pencil</td>
+            <td>0.93</td><td>23.3</td>
+            <td>0.83</td><td>26.7</td>
+            <td>1.10</td><td>23.3</td>
+            <td>0.87</td><td>23.3</td>
+            <td>1.33</td><td>10.0</td>
+            <td class="col-ours">0.70</td><td class="col-ours">33.3</td>
+            <td class="col-ours best">0.43</td><td class="col-ours best">60.0</td>
+          </tr>
+          <tr>
+            <td>T4 · Hook</td>
+            <td>0.70</td><td>43.3</td>
+            <td>0.50</td><td>53.3</td>
+            <td>0.63</td><td>26.7</td>
+            <td>0.80</td><td>33.3</td>
+            <td>0.60</td><td>53.3</td>
+            <td class="col-ours">0.40</td><td class="col-ours">60.0</td>
+            <td class="col-ours best">0.23</td><td class="col-ours best">76.7</td>
+          </tr>
+          <tr class="mean">
+            <td>Mean (T1–T4)</td>
+            <td>0.93</td><td>30.8</td>
+            <td>0.79</td><td>36.7</td>
+            <td>1.06</td><td>26.7</td>
+            <td>1.30</td><td>20.8</td>
+            <td>1.53</td><td>20.8</td>
+            <td class="col-ours">0.60</td><td class="col-ours">45.0</td>
+            <td class="col-ours best">0.40</td><td class="col-ours best">60.9</td>
+          </tr>
+          <tr>
+            <td>T5 · Ring *</td>
+            <td>0.87</td><td>40.0</td>
+            <td>1.07</td><td>36.7</td>
+            <td>1.80</td><td>13.3</td>
+            <td>1.47</td><td>20.0</td>
+            <td>1.27</td><td>20.0</td>
+            <td class="col-ours best">0.63</td><td class="col-ours best">56.7</td>
+            <td class="na">N/A</td><td class="na">N/A</td>
+          </tr>
+          <tr>
+            <td>T6 · Rod *</td>
+            <td>0.50</td><td>53.3</td>
+            <td>0.73</td><td>40.0</td>
+            <td>0.70</td><td>36.7</td>
+            <td>0.73</td><td>36.7</td>
+            <td>0.67</td><td>40.0</td>
+            <td class="col-ours best">0.33</td><td class="col-ours best">66.7</td>
+            <td class="na">N/A</td><td class="na">N/A</td>
+          </tr>
+          <tr class="mean">
+            <td>Mean (T1–T6)</td>
+            <td>0.85</td><td>36.1</td>
+            <td>0.83</td><td>37.2</td>
+            <td>1.12</td><td>26.1</td>
+            <td>1.23</td><td>23.3</td>
+            <td>1.34</td><td>23.9</td>
+            <td class="col-ours best">0.56</td><td class="col-ours best">50.6</td>
+            <td class="na">–</td><td class="na">–</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <figcaption style="text-align:left;margin-top:14px">
+      Ours&nbsp;(Spec.) gives the best in-domain performance (60.9% SR, 0.40 MAE on T1–T4), while the single Generalist CountNet transfers to novel objects T5–T6 with no perceptual retraining.
+    </figcaption>
+  </div>
+</section>
+
+<!-- ===================== BIBTEX ===================== -->
+<section id="bibtex" class="bibtex">
+  <div class="wrap">
+    <div class="section-head"><span class="num">06</span><h2>BibTeX</h2></div>
+<pre>@inproceedings{<span class="k">chen2026qtac</span>,
+  <span class="k">title</span>     = {<span class="v">QTac: Quantitative Robotic Grasping with Tactile Sensing</span>},
+  <span class="k">author</span>    = {<span class="v">Chen, Huajin and Chen, Tianxiao and Jin, Ke and Ouyang, Wenzhe and Chen, Jiming and Ye, Qi</span>},
+  <span class="k">booktitle</span> = {<span class="v">IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS)</span>},
+  <span class="k">year</span>      = {<span class="v">2026</span>}
+}</pre>
+  </div>
+</section>
+
+<!-- ===================== FOOTER ===================== -->
+<footer>
+  <div class="wrap">
+    <div>QTac &middot; Zhejiang University &middot; IROS 2026</div>
+    <div style="margin-top:8px">Project page template adapted from the academic project page layout.</div>
+    <div class="note">
+      <b>How to fill in the media:</b> drop your files into the <code>static/</code> folders and keep the filenames the page expects —
+      <code>static/videos/qtac_summary.mp4</code> (summary video), <code>static/images/teaser.png</code> (Fig. 1),
+      <code>static/images/framework.png</code> (Fig. 2), <code>static/images/qualitative.png</code> (Fig. 4),
+      <code>static/images/video_poster.png</code> (video thumbnail), and <code>static/pdfs/qtac.pdf</code> (the paper).
+      The placeholder boxes will automatically be replaced once the matching files exist.
+    </div>
+  </div>
+</footer>
+
+<script>
+// Auto-swap placeholder boxes for real images once the files are added.
+(function(){
+  var map = [
+    {id:'teaser',      src:'static/images/teaser.png',      alt:'QTac teaser figure'},
+    {id:'framework',   src:'static/images/framework.png',   alt:'QTac framework overview'},
+    {id:'qualitative-fig', src:'static/images/qualitative.png', alt:'QTac qualitative results'}
+  ];
+  map.forEach(function(m){
+    var box = document.getElementById(m.id);
+    if(!box) return;
+    var img = new Image();
+    img.onload = function(){
+      box.classList.add('has-media');
+      box.innerHTML = '';
+      var el = document.createElement('img');
+      el.src = m.src; el.alt = m.alt;
+      box.appendChild(el);
+    };
+    img.src = m.src;
+  });
+})();
+</script>
+
+</body>
+</html>
