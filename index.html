@@ -249,7 +249,7 @@ footer a{color:var(--ink-soft)}
       <a class="btn" href="static/pdfs/qtac.pdf"><i class="fa-solid fa-file-pdf"></i> Paper</a>
       <a class="btn alt" href="#"><i class="fa-solid fa-book"></i> arXiv</a>
       <a class="btn alt" href="https://kibry-spin.github.io/qtac"><i class="fa-solid fa-globe"></i> Project Page</a>
-      <a class="btn alt" href="#"><i class="fa-brands fa-github"></i> Code</a>
+      <a class="btn alt" href="#" style="opacity:.6;cursor:default;pointer-events:none"><i class="fa-brands fa-github"></i> Code <small style="font-size:11px;font-weight:400;opacity:.85">(Coming soon)</small></a>
     </div>
   </div>
 </header>
@@ -258,10 +258,8 @@ footer a{color:var(--ink-soft)}
 <section style="padding-top:10px">
   <div class="wrap">
     <figure>
-      <div class="media" id="teaser">
-        <i class="fa-regular fa-image"></i>
-        <div class="ph-title">Teaser figure (Fig. 1)</div>
-        <div>Place image at <code>static/images/teaser.png</code></div>
+      <div class="media has-media" id="teaser">
+        <img src="static/images/teaser.png" alt="QTac teaser figure" loading="eager" decoding="async" width="1200">
       </div>
       <figcaption><b>Conceptual overview of QTac.</b> The robot estimates the in-hand count from tactile feedback and rectifies initial grasp errors through iterative regrasping to reach the target quantity.</figcaption>
     </figure>
@@ -298,10 +296,8 @@ footer a{color:var(--ink-soft)}
     <div class="section-head"><span class="num">03</span><h2>Method</h2></div>
 
     <figure style="margin-bottom:30px">
-      <div class="media" id="framework">
-        <i class="fa-solid fa-diagram-project"></i>
-        <div class="ph-title">Framework overview (Fig. 2)</div>
-        <div>Place image at <code>static/images/framework.png</code></div>
+      <div class="media has-media" id="framework">
+        <img src="static/images/framework.png" alt="QTac framework overview" loading="lazy" decoding="async" width="1200">
       </div>
       <figcaption><b>Overview of the QTac framework.</b> A dual-mode data collection strategy, a standalone tactile CountNet, and a DiTFlow-based generative policy conditioned on the count distribution and the user-specified target.</figcaption>
     </figure>
@@ -343,10 +339,8 @@ footer a{color:var(--ink-soft)}
       The policy continuously performs exploratory adjustments until the explicitly decoded tactile state matches the target count. Successful quantitative grasps prior to placement are highlighted; <b>*</b> denotes novel objects.
     </p>
     <figure>
-      <div class="media" id="qualitative-fig" style="min-height:360px">
-        <i class="fa-solid fa-table-cells-large"></i>
-        <div class="ph-title">Qualitative results figure (Fig. 4)</div>
-        <div>Wide multi-row figure — place image at <code>static/images/qualitative.png</code></div>
+      <div class="media has-media" id="qualitative-fig" style="min-height:360px">
+        <img src="static/images/qualitative.png" alt="QTac qualitative results" loading="lazy" decoding="async" width="1200">
       </div>
       <figcaption><b>Reactive recovery behaviors across diverse tasks and target quantities.</b> Each row shows the Initial Grasp → Adjust → Regrasp → Place sequence, with the decoded left/right tactile state on the right.</figcaption>
     </figure>
@@ -472,53 +466,25 @@ footer a{color:var(--ink-soft)}
 </section>
 
 <!-- ===================== BIBTEX ===================== -->
-<!-- <section id="bibtex" class="bibtex">
+<section id="bibtex" class="bibtex">
   <div class="wrap">
     <div class="section-head"><span class="num">06</span><h2>BibTeX</h2></div>
 <pre>@inproceedings{<span class="k">chen2026qtac</span>,
-  Coming soon
+  <span class="k">title</span>     = {<span class="v">QTac: Quantitative Robotic Grasping with Tactile Sensing</span>},
+  <span class="k">author</span>    = {<span class="v">Chen, Huajin and Chen, Tianxiao and Jin, Ke and Ouyang, Wenzhe and Chen, Jiming and Ye, Qi</span>},
+  <span class="k">booktitle</span> = {<span class="v">IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS)</span>},
+  <span class="k">year</span>      = {<span class="v">2026</span>}
 }</pre>
   </div>
-</section> -->
+</section>
 
 <!-- ===================== FOOTER ===================== -->
 <footer>
   <div class="wrap">
     <div>QTac &middot; Zhejiang University &middot; IROS 2026</div>
     <div style="margin-top:8px">Project page template adapted from the academic project page layout.</div>
-    <div class="note">
-      <b>How to fill in the media:</b> drop your files into the <code>static/</code> folders and keep the filenames the page expects —
-      <code>static/videos/qtac_summary.mp4</code> (summary video), <code>static/images/teaser.png</code> (Fig. 1),
-      <code>static/images/framework.png</code> (Fig. 2), <code>static/images/qualitative.png</code> (Fig. 4),
-      <code>static/images/video_poster.png</code> (video thumbnail), and <code>static/pdfs/qtac.pdf</code> (the paper).
-      The placeholder boxes will automatically be replaced once the matching files exist.
-    </div>
   </div>
 </footer>
-
-<script>
-// Auto-swap placeholder boxes for real images once the files are added.
-(function(){
-  var map = [
-    {id:'teaser',      src:'static/images/teaser.png',      alt:'QTac teaser figure'},
-    {id:'framework',   src:'static/images/framework.png',   alt:'QTac framework overview'},
-    {id:'qualitative-fig', src:'static/images/qualitative.png', alt:'QTac qualitative results'}
-  ];
-  map.forEach(function(m){
-    var box = document.getElementById(m.id);
-    if(!box) return;
-    var img = new Image();
-    img.onload = function(){
-      box.classList.add('has-media');
-      box.innerHTML = '';
-      var el = document.createElement('img');
-      el.src = m.src; el.alt = m.alt;
-      box.appendChild(el);
-    };
-    img.src = m.src;
-  });
-})();
-</script>
 
 </body>
 </html>
